@@ -23,6 +23,24 @@ class SMSResponse(BaseModel):
     confidence_percentage: float
 
 
+@app.get("/")
+def read_root():
+    return {
+        "service": "SMS Spam Detection API",
+        "status": "online",
+        "version": "0.1.0",
+        "docs_url": "/docs",
+    }
+
+
+@app.get("/health")
+def health_check():
+    return {
+        "status": "healthy",
+        "model_loaded": model is not None,
+    }
+
+
 @app.post("/predict", response_model=SMSResponse)
 def predict_sms(sms: SMSRequest):
     text_to_predict = [sms.message]
