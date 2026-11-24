@@ -2,7 +2,11 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import joblib
 
-app = FastAPI()
+app = FastAPI(
+    title="SMS Spam Detection API",
+    description="Machine Learning service for classifying SMS messages as ham or spam.",
+    version="0.1.0",
+)
 
 # Load the saved pipeline
 model = joblib.load("spam_model.pkl")
@@ -12,13 +16,19 @@ class SMSRequest(BaseModel):
     message: str
 
 
-@app.post("/predict")
+class SMSResponse(BaseModel):
+    message: str
+    is_spam: bool
+    prediction: str
+    confidence_percentage: float
+
+
+@app.post("/predict", response_model=SMSResponse)
 def predict_sms(sms: SMSRequest):
     text_to_predict = [sms.message]
 
     prediction = model.predict(text_to_predict)[0]
     probabilities = model.predict_proba(text_to_predict)[0]
-    spam_probability = probabilities[1]
 
     is_spam = bool(prediction == "spam")
     confidence = max(probabilities) * 100
