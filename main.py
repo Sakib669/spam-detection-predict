@@ -23,3 +23,10 @@ def predict_sms(sms: SMSRequest):
 
     is_spam = bool(prediction == "spam")
     confidence = max(probability) * 100
+
+    return {
+        "message": sms.message,
+        "is_spam": is_spam,
+        "prediction": prediction,
+        "confidence_percentage": round(confidence, 2),
+    }
