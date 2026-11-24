@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import joblib
 
@@ -6,6 +7,15 @@ app = FastAPI(
     title="SMS Spam Detection API",
     description="Machine Learning service for classifying SMS messages as ham or spam.",
     version="0.1.0",
+)
+
+# Enable CORS for frontend web integration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Load the saved pipeline
