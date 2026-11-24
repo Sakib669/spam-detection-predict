@@ -17,12 +17,11 @@ def predict_sms(sms: SMSRequest):
     text_to_predict = [sms.message]
 
     prediction = model.predict(text_to_predict)[0]
-    probability = model.predict_proba(text_to_predict)[0][
-        1
-    ]  # Probability of being spam
+    probabilities = model.predict_proba(text_to_predict)[0]
+    spam_probability = probabilities[1]
 
     is_spam = bool(prediction == "spam")
-    confidence = max(probability) * 100
+    confidence = max(probabilities) * 100
 
     return {
         "message": sms.message,
