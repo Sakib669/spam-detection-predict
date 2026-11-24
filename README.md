@@ -11,3 +11,7 @@ The model is trained on the SMS Spam Collection dataset (`SMSSpamCollection.csv`
 |---|---|---|
 | `label` | string | Target classification (`ham` or `spam`) |
 | `message` | string | Raw text body of the SMS message |
+
+### Class Distribution
+- **Ham (legitimate):** 4,825 instances (~86.56%)
+- **Spam (unsolicited):** 749 instances (~13.44%)
