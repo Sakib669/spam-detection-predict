@@ -1,5 +1,5 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
 import joblib
 
 app = FastAPI(
@@ -13,7 +13,7 @@ model = joblib.load("spam_model.pkl")
 
 
 class SMSRequest(BaseModel):
-    message: str
+    message: str = Field(..., min_length=1, description="SMS text content to classify")
 
 
 class SMSResponse(BaseModel):
@@ -43,7 +43,11 @@ def health_check():
 
 @app.post("/predict", response_model=SMSResponse)
 def predict_sms(sms: SMSRequest):
-    text_to_predict = [sms.message]
+    cleaned_message = sms.message.strip()
+    if not cleaned_message:
+        raise HTTPException(status_code=400, detail="SMS message cannot be empty or whitespace only.")
+
+    text_to_predict = [cleaned_message]
 
     prediction = model.predict(text_to_predict)[0]
     probabilities = model.predict_proba(text_to_predict)[0]
@@ -52,7 +56,7 @@ def predict_sms(sms: SMSRequest):
     confidence = max(probabilities) * 100
 
     return {
-        "message": sms.message,
+        "message": cleaned_message,
         "is_spam": is_spam,
         "prediction": prediction,
         "confidence_percentage": round(confidence, 2),
